@@ -1,0 +1,6 @@
+name: local
+variables:
+  - name: base_url
+    value: http://localhost:3001/api/v1
+  - name: token
+    value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjQ4ZDllYjNhLTQ1NDEtNDhmNC1hN2JmLTNjMjAzMzNjNTNlOCIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc3Mzg5MTgzMywiZXhwIjoxNzczOTc4MjMzfQ.Gt9ttOX7gQr-gI5TlXD9RWUxsc6kkyWxqFuQyzRdtzI

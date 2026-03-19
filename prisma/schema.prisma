@@ -1,0 +1,114 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  student
+  technician
+  admin
+}
+
+enum IssueType {
+  hardware
+  software
+  electrical
+  furniture
+  network
+  other
+}
+
+enum Urgency {
+  low
+  medium
+  high
+}
+
+enum Status {
+  open
+  assigned
+  in_progress
+  resolved
+  closed
+  rejected
+}
+
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         Role
+  department   String?
+  phone        String?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  submittedComplaints Complaint[] @relation("StudentComplaints")
+  assignedComplaints  Complaint[] @relation("TechnicianComplaints")
+  statusLogs          StatusLog[]
+
+  @@map("users")
+}
+
+model Lab {
+  id         String      @id @default(uuid())
+  name       String      @unique
+  location   String?
+  building   String?
+  isActive   Boolean     @default(true)
+  createdAt  DateTime    @default(now())
+
+  complaints Complaint[]
+
+  @@map("labs")
+}
+
+model Complaint {
+  id           String    @id @default(uuid())
+  complaintNo  String    @unique
+  issueType    IssueType
+  title        String
+  description  String
+  urgency      Urgency   @default(medium)
+  status       Status    @default(open)
+  adminNote    String?
+  assignedAt   DateTime?
+  resolvedAt   DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  studentId    String
+  student      User      @relation("StudentComplaints", fields: [studentId], references: [id])
+
+  labId        String
+  lab          Lab       @relation(fields: [labId], references: [id])
+
+  assignedToId String?
+  assignedTo   User?     @relation("TechnicianComplaints", fields: [assignedToId], references: [id])
+
+  statusLogs   StatusLog[]
+
+  @@map("complaints")
+}
+
+model StatusLog {
+  id          String    @id @default(uuid())
+  oldStatus   Status
+  newStatus   Status
+  note        String?
+  changedAt   DateTime  @default(now())
+
+  complaintId String
+  complaint   Complaint @relation(fields: [complaintId], references: [id])
+
+  changedById String
+  changedBy   User      @relation(fields: [changedById], references: [id])
+
+  @@map("status_logs")
+}
