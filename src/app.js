@@ -9,14 +9,24 @@ const app = express();
 
 // ── Middleware ─────────────────────────────
 app.use(helmet());
-app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:5173' }));
+
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    'https://campuscare-frontend-ecru.vercel.app'
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  credentials: true
+}));
+
+app.options('*', cors()); // enable preflight
 app.use(express.json());
 
 // ── Routes ────────────────────────────────
-const authRoutes      = require('./routes/auth.routes');
-const labRoutes       = require('./routes/labs.routes');
-const complaintRoutes = require('./routes/complaint.routes');
-const adminRoutes     = require('./routes/admin.routes');
+const authRoutes       = require('./routes/auth.routes');
+const labRoutes        = require('./routes/labs.routes');
+const complaintRoutes  = require('./routes/complaint.routes');
+const adminRoutes      = require('./routes/admin.routes');
 const technicianRoutes = require('./routes/technician.routes');
 
 app.use('/api/v1/auth', authRoutes);
@@ -42,4 +52,5 @@ app.use((req, res) => {
   });
 });
 
+// ── Export app ───────────────────────────
 module.exports = app;
